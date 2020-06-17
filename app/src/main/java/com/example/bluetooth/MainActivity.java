@@ -21,8 +21,10 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     public static final int REQUEST_CODE_MENU=101;
-    PersonAdapter adapter;
+    public static final int REQUEST_PROFILE_MENU=102;
 
+    PersonAdapter adapter;
+    RecyclerView recyclerView;
     PersonDatabase database;
 
     @Override
@@ -50,11 +52,49 @@ public class MainActivity extends AppCompatActivity {
                 Integer temp=Integer.parseInt(device);
                 Toast.makeText(getApplicationContext(),"name:"+name+", device:"+device+"contents:"+contents,Toast.LENGTH_LONG).show();
 
+
+
                 adapter.addItem(new PersonInfo(name,temp,contents));
                 adapter.notifyDataSetChanged();
 
                 database.insertRecord(name,temp,contents);
             }
+
+        }
+
+        if(requestCode==REQUEST_PROFILE_MENU){
+
+            if(resultCode==RESULT_OK){
+
+                String flag=data.getStringExtra("flag");
+
+                if(flag.equals("0")){
+
+                    // 데이터베이스에서 삭제후 화면 갱신
+                    Toast.makeText(getApplicationContext(),"삭제",Toast.LENGTH_LONG).show();
+                    database.deleteRecord(data.getStringExtra("device"));
+                    ArrayList<PersonInfo> result=database.selectAll();
+                    adapter.setItems(result);
+
+                    recyclerView.setAdapter(adapter);
+
+                }
+
+                if(flag.equals("1")){
+
+                    Toast.makeText(getApplicationContext(),"수정",Toast.LENGTH_LONG).show();
+                    database.updateRecord(data.getStringExtra("device"),data.getStringExtra("name"),data.getStringExtra("contents"));
+                    ArrayList<PersonInfo> result=database.selectAll();
+                    adapter.setItems(result);
+
+                    recyclerView.setAdapter(adapter);
+                    // 데이터베이스에서 데이터 수정 후 화면 갱신
+                }
+
+
+
+            }
+
 
         }
 
@@ -67,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button button=findViewById(R.id.button);
 
-       RecyclerView recyclerView=findViewById(R.id.recyclerView);
+       recyclerView=findViewById(R.id.recyclerView);
         LinearLayoutManager layoutManager=new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -93,11 +133,30 @@ public class MainActivity extends AppCompatActivity {
 
     recyclerView.setAdapter(adapter);
 
+    adapter.setOnItemClickListener(new OnPersonItemClickListener() {
+        @Override
+        public void onItemClick(PersonAdapter.ViewHolder holder, View view, int position) {
+            PersonInfo item= adapter.getItem(position);
+            Toast.makeText(getApplicationContext(),"아이템 선택됨:"+item.getName(),Toast.LENGTH_LONG).show();
+
+            Intent intent=new Intent(getApplicationContext(),ProfileActivity.class);
+            intent.putExtra("name",item.getName());
+            intent.putExtra("device",item.getDevice());
+            intent.putExtra("contents",item.getContents());
+
+            startActivityForResult(intent,REQUEST_PROFILE_MENU);
+
+        }
+    });
+
+
     button.setOnClickListener(new View.OnClickListener(){
         @Override
         public void onClick(View v){
 
     Intent intent=new Intent(getApplicationContext(),RegisterActivity.class);
+            ArrayList<PersonInfo> result=database.selectAll();
+    intent.putParcelableArrayListExtra("key",result);
     startActivityForResult(intent,REQUEST_CODE_MENU);
 
         }

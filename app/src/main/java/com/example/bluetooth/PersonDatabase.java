@@ -170,6 +170,33 @@ public class PersonDatabase {
             }
         }
 
+        public void deleteRecord(String device){
+
+        int temp=Integer.parseInt(device);
+
+            try{
+            db.execSQL("delete from " + TABLE_PERSON_INFO + " WHERE DEVICE =" + device + ";");
+            } catch(Exception ex){
+                Log.e(TAG,"Exception in executing delete SQL.",ex);
+            }
+
+            }
+
+        public void updateRecord(String device,String name, String contents){
+
+        int temp=Integer.parseInt(device);
+            Log.d(TAG,"device:"+temp);
+        try{
+            db.execSQL("update "+ TABLE_PERSON_INFO + " SET CONTENTS= '"+contents+ "', NAME='"+name+ "' WHERE DEVICE="+temp+ ";");
+        } catch(Exception ex){
+            Log.e(TAG,"Exception in executing updat SQL",ex);
+        }
+
+
+        }
+
+
+
         public ArrayList<PersonInfo> selectAll(){
             ArrayList<PersonInfo> result=new ArrayList<PersonInfo>();
             try {

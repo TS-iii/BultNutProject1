@@ -32,7 +32,7 @@ public class RegisterActivity extends AppCompatActivity {
     TextView textview;  // 기기번호
     EditText editText;  // 이름
     EditText editText2;  // 참고사항
-
+    ArrayList<PersonInfo> result;
     String mac;
     BluetoothAdapter mBluetoothAdapter;
     Set<BluetoothDevice> mPairedDevices;
@@ -74,6 +74,10 @@ public class RegisterActivity extends AppCompatActivity {
         };
 
 
+        result=new ArrayList<PersonInfo>();
+        result=getIntent().getParcelableArrayListExtra("key");
+
+
         Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +94,24 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                String temp=textview.getText().toString();
+                int device=Integer.parseInt(temp);
+
+
+                for(PersonInfo d : result){
+
+                    if(d.device==device){
+
+
+                            // 만약 이미 기기가 등록되어있다면.
+                    }
+
+
+                }
+
+
+
+
                 Intent intent = new Intent();
                 intent.putExtra("name", editText.getText().toString());
                 intent.putExtra("device", textview.getText().toString());
@@ -104,6 +126,8 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
     }
+
+
 
     void listPairedDevices() {
 
